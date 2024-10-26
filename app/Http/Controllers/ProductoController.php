@@ -17,7 +17,8 @@ class ProductoController extends Controller
 
     public function index()
     {
-        return view('productos.index');
+        $productos = $this->productoService->getAll();
+        return view('productos.index', compact('productos'));
     }
 
     public function create()
