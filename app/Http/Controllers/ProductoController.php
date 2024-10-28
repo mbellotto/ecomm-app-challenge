@@ -11,6 +11,16 @@ class ProductoController extends Controller
 
     private ProductoService $productoService;
 
+    private $searchField = 'title';
+    private $search;
+
+    private $options = [
+        'title' => 'Titulo',
+        'price' => 'Precio',
+        'created_at' => 'Creación',
+    ];
+    private $defaultOption = 'title';
+
     public function __construct(ProductoService $productoService)
     {
         $this->productoService = $productoService;
@@ -19,19 +29,19 @@ class ProductoController extends Controller
     public function index(Request $request)
     {
 
-        $searchField = $request->get("searchField");
-        $search =$request->get("search");
+        $this->searchField = $request->get("searchField");
+        $this->search =$request->get("search");
 
-        if ($searchField and $search) {
-        // if($request->ajax()) {
-            $productos = $this->productoService->getAll([
-                "searchField" => $request->get("searchField"),
-                "search" => $request->get("search")
-            ]);
+        $searchField = $this->searchField;
+        $search = $this->search;
+        $options = $this->options;
+
+        if ($this->searchField and $this->search) {
+            $productos = $this->productoService->getAll($this->searchField,$this->search);
         }else {
             $productos = $this->productoService->getAll();
         }
-        return view('productos.index', compact('productos', 'searchField', 'search'));
+        return view('productos.index', compact('productos', 'searchField', 'search', 'options'));
     }
 
     public function create()

@@ -2,32 +2,28 @@
 
 @section('content')
     <div>
-        <h2>PRODUCTOS</h2>
+        <h2 class="mb-3">PRODUCTOS</h2>
 
-        <!-- <nav class="navbar"> -->
-            <!-- <div class="container-fluid">-->
-                <div class="row">
-                    <div class="col-md-3 col-sm-12">
-                        <button type="button" class="btn btn-sm btn-primary add-btn">
-                            Agregar
-                        </button>
-                    </div>
-                    <div class="col-md-7 col-sm-12 offset-md-2 offset-sm-0">
-                        <form id="search-form" class="d-flex">
-                            <div class="input-group">
-                                <select id="form-select" aria-label="Campo de filtro">
-                                    <option selected value="titulo">Titulo</option>
-                                    <option value="precio">Precio</option>
-                                    <option value="created_at">Creación</option>
-                                </select>
-                                <input class="form-control w-50" type="search" id="search-text" placeholder="Termino a buscar" aria-label="Buscar">
-                                <button class="btn btn-outline-success" type="submit">Buscar</button>
-                            </div>
-                        </form>
-                    </div>
-                <!-- </div> -->
+        <div class="row mb-3">
+            <div class="col-md-3 col-sm-12">
+                <button type="button" class="btn btn-sm btn-primary add-btn">
+                    Agregar
+                </button>
             </div>
-        <!-- </nav> -->
+            <div class="col-md-7 col-sm-12 offset-md-2 offset-sm-0">
+                <form id="search-form" class="d-flex" method="GET" action="{{ url('/productos') }}">
+                    <div class="input-group">
+                        <select class="form-select" id="exampleSelect" name="searchField" aria-label="Campo de filtro">
+                            @foreach ($options as $value => $label)
+                            <option value="{{ $value }}" {{ $value== $searchField ? 'selected' : ''}}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        <input class="form-control w-50" type="search" id="input-search" name="search" value="{{ $search }}" id="search-text" placeholder="Termino a buscar" aria-label="Buscar">
+                        <button class="btn btn-outline-success" type="submit">Buscar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <table id="productosTable" class="table">
             <thead>
@@ -65,7 +61,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="producto-form" action="{{ route('productos.store') }}" method="POST" novalidate="true">
+                    <form id="producto-form" action="{{ route('productos.store') }}" method="POST" novalidate>
                         @csrf
 
                         <div>
@@ -76,7 +72,7 @@
                             <label for="title" class="form-label">Titulo</label>
                             <input type="text" class="form-control" id="producto-title" name="title" required>
                             <div id="title-error-message" class="invalid-feedback">
-                                Ingrese un titulo valido
+                                Ingrese un titulo valido, debe tener un máximo de 128 caracteres
                             </div>
                         </div>
 
@@ -86,7 +82,7 @@
                                 <span class="input-group-text">$</span>
                                 <input type="text" class="form-control" id="producto-price" name="price" required>
                                 <div id="price-error-message" class="invalid-feedback">
-                                    Ingrese un precio valido
+                                    Ingrese un precio valido, solo debe contener valores numéricos
                                 </div>
                             </div>
                         </div>
@@ -157,7 +153,6 @@
                     '_token': '{{ csrf_token() }}',
                 },
                 success: function(response) {
-                    // alert(response.message);
                     location.reload();
                 },
                 error: function(xhr) {
@@ -178,7 +173,6 @@
                 type: type,
                 data: $('#producto-form').serialize(),
                 success: function(response) {
-                    // alert(response.message);
                     location.reload();
                 },
                 error: function(xhr) {
@@ -187,7 +181,7 @@
             });
         });
 
-        $("#search-form").on('submit', (event) => {
+        $("#search-form2").on('submit', (event) => {
             event.preventDefault();
 
             const search = $("#search-text").val();
@@ -200,11 +194,9 @@
                     method: 'GET',
                     success: function(response) {
                         location.reload();
-                        // renderProducts(response.products);
-                        // renderPagination(response.pagination);
                     },
-                    error: function() {
-                        alert('Error loading products');
+                    error: function(xhr) {
+                        alert('Error loading products', xhr.responseJSON.errors);
                     }
                 });
             }
@@ -232,18 +224,13 @@
         $('#producto-title').on("keyup", () => $('#producto-title').removeClass('is-invalid'));
         $('#producto-price').on("keyup", () => $('#producto-price').removeClass('is-invalid'));
 
+        $("#input-search").on("search", (event) => {
+            event.preventDefault();
 
-        // Event listener for when modal is completely hidden
-        const modalElement = document.getElementById('producto-modal');
-        modalElement.addEventListener('hidden.bs.modal', function (event) {
-            console.log('Modal is hidden');
-            // Add any cleanup logic here
+            if (!event.target.value.length) {
+                $("#search-form").submit();
+            }
         });
 
-        // Event listener for when modal is completely shown
-        modalElement.addEventListener('shown.bs.modal', function (event) {
-            console.log('Modal is shown');
-            // Add any initialization logic here
-        });
     </script>
 @endsection

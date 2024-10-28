@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class ProductoService {
 
@@ -22,8 +23,6 @@ class ProductoService {
     private function loadProductos()
     {
         if (!File::exists($this->filePath)) {
-            // Presentar mensaje indicando que el archivo no existe
-            // crear un archivo vacio
             $this->productos = [];
             $this->saveProductos($this->productos);
         } else {
@@ -50,9 +49,10 @@ class ProductoService {
 
     public function getAll($searchField=null, $search=null)
     {
+
         if ($searchField and $search) {
             $productos =collect($this->productos)->filter(function ($producto) use ($searchField,$search) {
-                return stripos((string)$producto[$searchField], $search) !== false;
+                return stripos((string)$producto->$searchField, $search) !== false;
             });
         } else {
             $productos =$this->productos;
@@ -96,15 +96,6 @@ class ProductoService {
         $productos = array_filter($this->productos, fn($producto) => $producto->id != $id);
 
         $this->productos = array_values($productos);
-
-        /*
-        foreach ($this->productos as &$producto) {
-            if ($producto->id == $id) {
-                $producto = null;
-                break;
-            }
-        }
-        */
 
         $this->saveProductos($this->productos);
 
