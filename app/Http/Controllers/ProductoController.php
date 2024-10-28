@@ -16,10 +16,22 @@ class ProductoController extends Controller
         $this->productoService = $productoService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $productos = $this->productoService->getAll();
-        return view('productos.index', compact('productos'));
+
+        $searchField = $request->get("searchField");
+        $search =$request->get("search");
+
+        if ($searchField and $search) {
+        // if($request->ajax()) {
+            $productos = $this->productoService->getAll([
+                "searchField" => $request->get("searchField"),
+                "search" => $request->get("search")
+            ]);
+        }else {
+            $productos = $this->productoService->getAll();
+        }
+        return view('productos.index', compact('productos', 'searchField', 'search'));
     }
 
     public function create()
@@ -36,12 +48,12 @@ class ProductoController extends Controller
     public function store(Request $request)
     {
 
-        $producto = array(
-            "title" => $request->input('title'),
-            "price" => $request->input('price')
-        );
+        $validatedProduct = $request->validate([
+            "title" => "required|string|max:128",
+            "price" => "required|numeric",
+        ]);
 
-        $id = $this->productoService->create($producto);
+        $id = $this->productoService->create($validatedProduct);
 
         Log::channel('productos')->info('POST /productos with ID={id}', ['id' => $id]);
 

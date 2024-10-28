@@ -48,9 +48,17 @@ class ProductoService {
         return $id;
     }
 
-    public function getAll()
+    public function getAll($searchField=null, $search=null)
     {
-        return $this->productos;
+        if ($searchField and $search) {
+            $productos =collect($this->productos)->filter(function ($producto) use ($searchField,$search) {
+                return stripos((string)$producto[$searchField], $search) !== false;
+            });
+        } else {
+            $productos =$this->productos;
+        }
+
+        return $productos;
     }
 
     public function find($key, $value)
@@ -88,6 +96,15 @@ class ProductoService {
         $productos = array_filter($this->productos, fn($producto) => $producto->id != $id);
 
         $this->productos = array_values($productos);
+
+        /*
+        foreach ($this->productos as &$producto) {
+            if ($producto->id == $id) {
+                $producto = null;
+                break;
+            }
+        }
+        */
 
         $this->saveProductos($this->productos);
 

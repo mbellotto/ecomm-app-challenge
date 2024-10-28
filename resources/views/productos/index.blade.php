@@ -4,16 +4,30 @@
     <div>
         <h2>PRODUCTOS</h2>
 
-        <nav class="navbar">
-            <div class="container-fluid">
-                <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#producto-modal">
-                    Agregar
-                </button> -->
-                <button type="button" class="btn btn-primary add-btn">
-                    Agregar
-                </button>
+        <!-- <nav class="navbar"> -->
+            <!-- <div class="container-fluid">-->
+                <div class="row">
+                    <div class="col-md-3 col-sm-12">
+                        <button type="button" class="btn btn-sm btn-primary add-btn">
+                            Agregar
+                        </button>
+                    </div>
+                    <div class="col-md-7 col-sm-12 offset-md-2 offset-sm-0">
+                        <form id="search-form" class="d-flex">
+                            <div class="input-group">
+                                <select id="form-select" aria-label="Campo de filtro">
+                                    <option selected value="titulo">Titulo</option>
+                                    <option value="precio">Precio</option>
+                                    <option value="created_at">Creación</option>
+                                </select>
+                                <input class="form-control w-50" type="search" id="search-text" placeholder="Termino a buscar" aria-label="Buscar">
+                                <button class="btn btn-outline-success" type="submit">Buscar</button>
+                            </div>
+                        </form>
+                    </div>
+                <!-- </div> -->
             </div>
-        </nav>
+        <!-- </nav> -->
 
         <table id="productosTable" class="table">
             <thead>
@@ -147,7 +161,7 @@
                     location.reload();
                 },
                 error: function(xhr) {
-                    alert(xhr.responseJSON.error);
+                    alert(xhr.responseJSON.errors);
                 }
             });
         });
@@ -168,9 +182,32 @@
                     location.reload();
                 },
                 error: function(xhr) {
-                    alert(xhr.responseJSON.error);
+                    setFormErrors(xhr.responseJSON.errors)
                 }
             });
+        });
+
+        $("#search-form").on('submit', (event) => {
+            event.preventDefault();
+
+            const search = $("#search-text").val();
+            const searchField = $("#form-select").val();
+            let queryString = '';
+            if (search) {
+                queryString = `?search=${search}&searchField=${searchField}`;
+                $.ajax({
+                    url: `{{ route('productos.index') }}${queryString}`,
+                    method: 'GET',
+                    success: function(response) {
+                        location.reload();
+                        // renderProducts(response.products);
+                        // renderPagination(response.pagination);
+                    },
+                    error: function() {
+                        alert('Error loading products');
+                    }
+                });
+            }
         });
 
         // Function to open modal
@@ -182,6 +219,18 @@
         function closeModal() {
             productoModal.hide();
         }
+
+        function setFormErrors( errors ) {
+            if (errors.title) {
+                $('#producto-title').addClass('is-invalid');
+            }
+            if (errors.price) {
+                $('#producto-price').addClass('is-invalid');
+            }
+        }
+
+        $('#producto-title').on("keyup", () => $('#producto-title').removeClass('is-invalid'));
+        $('#producto-price').on("keyup", () => $('#producto-price').removeClass('is-invalid'));
 
 
         // Event listener for when modal is completely hidden
