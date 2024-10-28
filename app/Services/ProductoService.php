@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 
 class ProductoService {
 
@@ -47,18 +49,30 @@ class ProductoService {
         return $id;
     }
 
-    public function getAll($searchField=null, $search=null)
+    public function getAll($searchField=null, $search=null, $perPage=10)
     {
 
         if ($searchField and $search) {
-            $productos =collect($this->productos)->filter(function ($producto) use ($searchField,$search) {
+            $productos = collect($this->productos)->filter(function ($producto) use ($searchField,$search) {
                 return stripos((string)$producto->$searchField, $search) !== false;
             });
         } else {
-            $productos =$this->productos;
+            $productos = collect($this->productos);
         }
 
-        return $productos;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $currentPageItems = $productos->slice(($currentPage - 1) * $perPage, $perPage)->all();
+
+        return new LengthAwarePaginator(
+            $currentPageItems,
+            count($productos),
+            $perPage,
+            $currentPage,
+            [
+                'path' => Request::url(),
+                'query' => Request::query()
+            ]
+        );
     }
 
     public function find($key, $value)

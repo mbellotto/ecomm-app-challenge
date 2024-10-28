@@ -13,6 +13,7 @@ class ProductoController extends Controller
 
     private $searchField = 'title';
     private $search;
+    private $perPage;
 
     private $options = [
         'title' => 'Titulo',
@@ -31,13 +32,15 @@ class ProductoController extends Controller
 
         $this->searchField = $request->get("searchField");
         $this->search =$request->get("search");
+        $this->perPage = $request->get("perPage") ? $request->get("perPage") : 10;
 
         $searchField = $this->searchField;
         $search = $this->search;
+        $perPage = $this->perPage;
         $options = $this->options;
 
         if ($this->searchField and $this->search) {
-            $productos = $this->productoService->getAll($this->searchField,$this->search);
+            $productos = $this->productoService->getAll($this->searchField,$this->search, $perPage);
         }else {
             $productos = $this->productoService->getAll();
         }

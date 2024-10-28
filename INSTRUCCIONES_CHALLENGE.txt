@@ -9,7 +9,7 @@ En este desafío técnico se busca implementar un CRUD básico de una sola entid
 3) OK
 4) OK + Bootstrap
 5) OK
-7) Filtros: OK
+7) Filtros: OK, Paginación: OK
 8) OK (validar: CSRF: OK, escape: ?)
 9) OK
 11) OK
