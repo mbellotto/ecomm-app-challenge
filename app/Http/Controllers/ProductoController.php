@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\ProductoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class ProductoController extends Controller
 {
@@ -30,6 +31,8 @@ class ProductoController extends Controller
     public function index(Request $request)
     {
 
+        $role = Session::get('user')->role;
+
         $this->searchField = $request->get("searchField");
         $this->search =$request->get("search");
         $this->perPage = $request->get("perPage") ? $request->get("perPage") : 10;
@@ -44,7 +47,7 @@ class ProductoController extends Controller
         }else {
             $productos = $this->productoService->getAll();
         }
-        return view('productos.index', compact('productos', 'searchField', 'search', 'options'));
+        return view('productos.index', compact('productos', 'searchField', 'search', 'options', 'role'));
     }
 
     public function create()
