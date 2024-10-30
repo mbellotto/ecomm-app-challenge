@@ -32,7 +32,7 @@ class AuthController extends Controller
 
         Log::channel('productos')->info('POST /login Access refused to user with email={email}', ['email' => $credentials['email']]);
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Por favor verifique sus credenciales e intentelo nuevamente',
         ]);
     }
 

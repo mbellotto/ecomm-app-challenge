@@ -44,6 +44,16 @@
             border-top-right-radius: 0;
         }
     </style>
+
+    @if(!empty($errors->first()))
+        <div class="row col-lg-12">
+            <div class="alert alert-danger alert-dismissible fade show">
+                <span>{{ $errors->first() }}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    @endif
+
     <div class="form-signin">
         <form method="POST" action="{{ route('login') }}">
             <h1 class="h3 mb-3 fw-normal">Por favor ingrese sus credenciales</h1>

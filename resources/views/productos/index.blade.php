@@ -2,6 +2,15 @@
 
 @section('content')
     <div>
+        @if(!empty($errors->first()))
+            <div class="row col-lg-12">
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <span>{{ $errors->first() }}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        @endif
+
         <h2 class="mb-3">PRODUCTOS</h2>
 
         <div class="row mb-3">
@@ -115,16 +124,40 @@
         </div>
     </div>
 
+    <div class="modal fade" id="confirmation-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmation-modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalLabel">Eliminación de Producto</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="confirmation-form">
+                    <div class="modal-body">
+                        <input type="hidden" name="id_product" id="id-product">
+                        <p>¿Confirma la eliminación del producto?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" id="delete-confirmation" name="delete-confirmation" class="btn btn-primary">Confirmar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
     <script>
 
         let productoModal;
-        let confirmacionModal;
+        let confirmationModal;
 
         $(document).ready(function() {
             productoModal = new bootstrap.Modal(document.getElementById('producto-modal'), {
                 keyboard: false
             });
-            confirmacionModal = new bootstrap.Modal(document.getElementById('confirmacion-modal'), {
+            confirmationModal = new bootstrap.Modal(document.getElementById('confirmation-modal'), {
                 keyboard: false
             });
         })
@@ -153,6 +186,14 @@
 
         $('.delete-btn').on('click', async function() {
             let id = $(this).data('id');
+            confirmationModal.show();
+            $('#delete-confirmation').data('id', id);
+        });
+
+        $('#delete-confirmation').on('click', async function() {
+            let id = $(this).data('id');
+
+            confirmationModal.hide();
 
             $.ajax({
                 url: `/productos/${id}`,
