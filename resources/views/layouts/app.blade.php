@@ -27,6 +27,13 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('productos.index') }}">Productos</a>
                     </li>
+                    <li class="nav-item">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <input hidden="true" name="empty" />
+                            <button class="nav-link" type="submit">Cerrar Sesión</button>
+                        </form>
+                    </li>
                 </ul>
             </div>
         </div>

@@ -6,9 +6,11 @@
 
         <div class="row mb-3">
             <div class="col-md-3 col-sm-12">
-                <button type="button" class="btn btn-sm btn-primary add-btn">
-                    Agregar
-                </button>
+                @if($level >= 11)
+                    <button type="button" class="btn btn-sm btn-primary add-btn">
+                        Agregar
+                    </button>
+                @endif
             </div>
             <div class="col-md-7 col-sm-12 offset-md-2 offset-sm-0">
                 <form id="search-form" class="d-flex" method="GET" action="{{ url('/productos') }}">
@@ -37,14 +39,18 @@
             </thead>
             <tbody>
             @foreach ($productos as $producto)
-                <tr data-id="<?= $producto->id ?>" scope="row">
-                    <td><?= $producto->id ?></td>
-                    <td><?= $producto->title ?></td>
-                    <td><?= $producto->price ?></td>
-                    <td><?= $producto->created_at ?></td>
+                <tr data-id="{{$producto->id}}" scope="row">
+                    <td>{{$producto->id}}</td>
+                    <td>{{$producto->title}}</td>
+                    <td>{{$producto->price}}</td>
+                    <td>{{$producto->created_at}}</td>
                     <td>
-                        <button data-id="<?= $producto->id ?>" class="edit-btn btn btn-primary btn-sm">Editar</button>
-                        <button data-id="<?= $producto->id ?>" class="delete-btn btn btn-danger btn-sm">Eliminar</button>
+                        @if($level >= 11)
+                            <button data-id="{{$producto->id}}" class="edit-btn btn btn-primary btn-sm">Editar</button>
+                        @endif
+                        @if($level >= 111)
+                            <button data-id="{{$producto->id}}" class="delete-btn btn btn-danger btn-sm">Eliminar</button>
+                        @endif
                     </td>
                 </tr>
             @endforeach
@@ -99,11 +105,6 @@
                             <input type="hidden" class="form-control" id="producto-created" name="created_at">
                         </div>
 
-                        <!-- <div class="mb-3">
-                            <button type="submit" class="btn btn-primary">Guardar</button>
-                            <a href="{{ route('productos.index') }}" class="btn btn-secondary">Cancelar</a>
-                        </div> -->
-
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -115,7 +116,6 @@
     </div>
 
     <script>
-        // Initialize modal instance
 
         let productoModal;
         let confirmacionModal;
@@ -210,12 +210,10 @@
             }
         });
 
-        // Function to open modal
         function openModal() {
             productoModal.show();
         }
 
-        // Function to close modal
         function closeModal() {
             productoModal.hide();
         }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -25,9 +26,11 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if ($this->authService->authenticate($credentials['email'], $credentials['password'])) {
+            Log::channel('productos')->info('POST /login Access granted to user with email={email}', ['email' => $credentials['email']]);
             return redirect()->intended('productos');
         }
 
+        Log::channel('productos')->info('POST /login Access refused to user with email={email}', ['email' => $credentials['email']]);
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ]);
@@ -35,9 +38,10 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        Log::channel('productos')->info('POST /logout Start');
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect('/login');
     }
 }

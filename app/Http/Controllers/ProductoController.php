@@ -30,8 +30,7 @@ class ProductoController extends Controller
 
     public function index(Request $request)
     {
-
-        $role = Session::get('user')->role;
+        $user = Session::get('user');
 
         $this->searchField = $request->get("searchField");
         $this->search =$request->get("search");
@@ -41,13 +40,14 @@ class ProductoController extends Controller
         $search = $this->search;
         $perPage = $this->perPage;
         $options = $this->options;
+        $level = $user['level'];
 
         if ($this->searchField and $this->search) {
             $productos = $this->productoService->getAll($this->searchField,$this->search, $perPage);
         }else {
             $productos = $this->productoService->getAll();
         }
-        return view('productos.index', compact('productos', 'searchField', 'search', 'options', 'role'));
+        return view('productos.index', compact('productos', 'searchField', 'search', 'options', 'level'));
     }
 
     public function create()
@@ -64,10 +64,17 @@ class ProductoController extends Controller
     public function store(Request $request)
     {
 
-        $validatedProduct = $request->validate([
+        $request->validate([
             "title" => "required|string|max:128",
             "price" => "required|numeric",
         ]);
+
+        $validatedProduct = [
+            "title" => strip_tags($request->input("title")),
+            "price" => strip_tags($request->input("price")),
+        ];
+
+
 
         $id = $this->productoService->create($validatedProduct);
 
@@ -84,13 +91,18 @@ class ProductoController extends Controller
     {
         $id = $request->input('id');
 
-        $producto = array(
-            "id" => $request->input('id'),
-            "title" => $request->input('title'),
-            "price" => $request->input('price')
+        $request->validate([
+            "title" => "required|string|max:128",
+            "price" => "required|numeric",
+        ]);
+
+        $validatedProducto = array(
+            "id" => strip_tags($request->input('id')),
+            "title" => strip_tags($request->input('title')),
+            "price" => strip_tags($request->input('price'))
         );
 
-        $this->productoService->update($id, $producto);
+        $this->productoService->update($id, $validatedProducto);
 
         Log::channel('productos')->info('PUT /productos with ID={id}', ['id' => $id]);
     }

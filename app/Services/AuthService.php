@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 class AuthService
@@ -12,19 +13,22 @@ class AuthService
     {
         $this->users = collect([
             [
-                'email' => 'admin@challenge.com',
+                'email' => 'manager@challenge.com',
                 'password' => 'password',
                 'role' => 'admin',
+                'level' => 111,
             ],
             [
                 'email' => 'operator@challenge.com',
                 'password' => 'password',
                 'role' => 'operator',
+                'level' => 11,
             ],
             [
                 'email' => 'user@challenge.com',
                 'password' => 'password',
                 'role' => 'user',
+                'level' => 1,
             ],
         ]);
     }
@@ -38,7 +42,7 @@ class AuthService
             return $user['email'] === $email && $user['password'] === $password;
         });
 
-        if ($key) {
+        if ($key !== false ) {
             Session::put('user', $this->users[$key]);
             $isAuthenticated = true;
         }

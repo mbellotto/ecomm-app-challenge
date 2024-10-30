@@ -13,7 +13,7 @@ En este desafío técnico se busca implementar un CRUD básico de una sola entid
 8) OK (validar: CSRF: OK, escape: ?)
 9) OK
 11) OK
-
+12) OK
 
 
 **Requisitos:**
